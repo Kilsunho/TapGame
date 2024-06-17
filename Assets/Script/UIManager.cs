@@ -1,42 +1,47 @@
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
+﻿using UnityEngine;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    public Text scoreText;
-    public Transform upgradePanel;
-    public GameObject upgradeButtonPrefab;
+    public static UIManager instance;
 
-    public void Init()
-    {
-        UpdateScoreUI(0);
-        RefreshUpgradePanel();
-    }
+    public TMP_Text moneyText; // 돈을 표시할 TMP 텍스트
+    public TMP_Text upgradeCostText; // 업그레이드 비용을 표시할 TMP 텍스트
+    public GameObject upgradeButton; // 강화 버튼
 
-    public void UpdateScoreUI(int score)
+    private void Awake()
     {
-        if (scoreText != null)
+        if (instance == null)
         {
-            scoreText.text = "Score: " + score.ToString();
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 
-    public void RefreshUpgradePanel()
+    public void UpdateMoneyUI(int money)
     {
-        // ���� ��ư�� ����
-        foreach (Transform child in upgradePanel)
-        {
-            Destroy(child.gameObject);
-        }
+        moneyText.text = money.ToString(); // 돈을 UI에 업데이트
+    }
 
-        // ���ο� ���׷��̵� ��ư ����
-        List<Upgrade> upgrades = GameManager.Instance.GameController.GetUpgrades();
-        foreach (Upgrade upgrade in upgrades)
+    public void UpdateUpgradeCostUI(float upgradeCost)
+    {
+        upgradeCostText.text = "Upgrade Cost: " + upgradeCost.ToString("F0"); // 업그레이드 비용 업데이트
+    }
+
+    public void SetButtonInteractable(GameObject button, bool interactable)
+    {
+        // 버튼의 상호작용 가능 여부 설정
+        button.GetComponent<UnityEngine.UI.Button>().interactable = interactable;
+
+        // 버튼 비활성화 시 투명도를 조절하여 흐리게 표현
+        CanvasGroup canvasGroup = button.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
         {
-            GameObject buttonGO = Instantiate(upgradeButtonPrefab, upgradePanel);
-            UpgradeButton upgradeButton = buttonGO.GetComponent<UpgradeButton>();
-            upgradeButton.Init(upgrade);
+            canvasGroup = button.AddComponent<CanvasGroup>();
         }
+        canvasGroup.alpha = interactable ? 1f : 0.5f; // 활성화일 때는 투명도 1, 비활성화일 때는 투명도 0.5
     }
 }

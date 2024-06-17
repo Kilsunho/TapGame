@@ -1,38 +1,34 @@
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager instance;
+    public static GameManager instance;
 
-    public static GameManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                GameObject singleton = new GameObject("GameManager");
-                instance = singleton.AddComponent<GameManager>();
-            }
-            return instance;
-        }
-    }
-
-    public GameController GameController;
-    public UIManager uiManager;
-
-    private void Awake()
+    void Awake()
     {
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(gameObject); // 중복된 GameManager 인스턴스 방지
         }
+    }
 
-        GameController.Init();
-        uiManager.Init();
+    // UI 업데이트
+    public void UpdateMoneyUI(TMP_Text moneyText, int money)
+    {
+        moneyText.text = money.ToString();
+    }
+
+    // 보스를 클리어하여 다음 스테이지로 이동
+    public void ClearBoss()
+    {
+        Debug.Log("보스를 클리어했습니다. 다음 스테이지로 이동합니다.");
+        // 다음 스테이지 로직 추가
     }
 }
+
+
